@@ -1,0 +1,139 @@
+.root {
+  width: 100%;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.item {
+  min-width: 0;
+}
+
+.card {
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius-md, 14px);
+  border: 1px solid var(--border);
+  background: var(--paper-elevated);
+  transition: box-shadow 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.postLink {
+  display: block;
+}
+
+.postLink:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm, 8px);
+}
+
+.postTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.postBody {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.actions {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ghostBtn {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.ghostBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sentinel {
+  height: 1px;
+  margin-top: 1rem;
+}
+
+.loading,
+.end {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  margin-top: 1rem;
+}
+
+.moreBtn {
+  display: block;
+  margin: 1.25rem auto 0;
+  min-height: 44px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-pill, 999px);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.moreBtn:hover {
+  background: var(--accent-hover);
+}
+
+.moreBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.error {
+  padding: 1.25rem;
+  border-radius: var(--radius-md, 14px);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.retry {
+  margin-top: 0.75rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-strong);
+  background: var(--paper-elevated);
+  cursor: pointer;
+}
+
+.empty {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}

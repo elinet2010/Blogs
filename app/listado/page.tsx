@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCategoryBySlug } from "@/lib/categories";
+import { PostsList } from "@/components/posts-list/PostsList";
 import styles from "./page.module.css";
 
 type ListadoPageProps = {
@@ -85,13 +86,15 @@ export default async function ListadoPage({ searchParams }: ListadoPageProps) {
           )}
         </header>
 
-        <section className={styles.placeholder} aria-label="Contenido pendiente">
-          <p className={styles.placeholderText}>
-            {unknownSlug
-              ? "Vuelve al inicio o elige otra categoría."
-              : "Las publicaciones se cargarán en una siguiente iteración."}
-          </p>
-        </section>
+        {unknownSlug ? (
+          <section className={styles.placeholder} aria-label="Sin categoría">
+            <p className={styles.placeholderText}>
+              Vuelve al inicio o elige otra categoría.
+            </p>
+          </section>
+        ) : (
+          <PostsList filterUserId={category ? category.userId : null} />
+        )}
       </main>
     </div>
   );
