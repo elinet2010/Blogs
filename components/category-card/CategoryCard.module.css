@@ -1,0 +1,149 @@
+.link {
+  display: block;
+  border-radius: 12px;
+  outline-offset: 3px;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+  height: 100%;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid var(--card-border, #e5e5e5);
+  border-radius: 12px;
+  color: #fafaf9;
+  background-color: var(--card-bg, #1c1917);
+  background-image: linear-gradient(
+      180deg,
+      rgba(12, 10, 9, 0.2) 0%,
+      rgba(12, 10, 9, 0.55) 45%,
+      rgba(12, 10, 9, 0.88) 100%
+    ),
+    var(--card-cover-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: #0c0a09;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.link:hover .card::after {
+  opacity: 0.58;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    --card-border: color-mix(in srgb, #fafaf9 22%, transparent);
+    --card-bg: #0c0a09;
+  }
+}
+
+.link:hover .card {
+  border-color: var(--card-border-hover, color-mix(in srgb, var(--accent) 55%, transparent));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+  transform: translateY(-3px);
+}
+
+/* Variante sobre el cover de inicio: borde luminoso y scrim un poco más suave arriba */
+.cardCover {
+  --card-border: color-mix(in srgb, var(--cover-text) 22%, transparent);
+  --card-border-hover: color-mix(in srgb, var(--cover-accent-line) 65%, transparent);
+  background-image: linear-gradient(
+      165deg,
+      rgba(41, 37, 36, 0.35) 0%,
+      rgba(28, 25, 23, 0.65) 42%,
+      rgba(12, 10, 9, 0.9) 100%
+    ),
+    linear-gradient(
+      125deg,
+      color-mix(in srgb, var(--cover-accent-line) 18%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--card-cover-image);
+  backdrop-filter: saturate(1.1);
+  -webkit-backdrop-filter: saturate(1.1);
+}
+
+.link:hover .cardCover {
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px color-mix(in srgb, var(--cover-text) 14%, transparent);
+  border-color: var(--card-border-hover);
+}
+
+/* Texto un poco más nítido al oscurecer el fondo */
+.link:hover .title {
+  color: #ffffff;
+  text-shadow:
+    0 0 20px rgba(0, 0, 0, 0.9),
+    0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.link:hover .description {
+  color: #f5f5f4;
+  text-shadow:
+    0 0 16px rgba(0, 0, 0, 0.85),
+    0 1px 6px rgba(0, 0, 0, 0.55);
+}
+
+.link:hover .hint {
+  color: #ffedd5;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.75);
+}
+
+.title {
+  position: relative;
+  z-index: 1;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  color: #fafaf9;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.description {
+  position: relative;
+  z-index: 1;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  color: color-mix(in srgb, #fafaf9 88%, transparent);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+}
+
+.hint {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fed7aa;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cardCover .hint {
+  color: #fdba74;
+}
