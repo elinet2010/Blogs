@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_noStore as noStore } from "next/cache";
-import { ButtonLink } from "@/components/commons/button-link/ButtonLink";
 import { fetchPostsPage } from "@/data/api-posts";
 import { getCategoryBySlug } from "@/data/categories";
 import { POSTS_LIST_PAGE_SIZE } from "@/data/list-pagination";
@@ -77,7 +76,7 @@ export default async function ListadoPage({ searchParams }: ListadoPageProps) {
     try {
       initialRemotePosts = await fetchPostsPage(
         0,
-        POSTS_LIST_PAGE_SIZE,
+        POSTS_LIST_PAGE_SIZE, 
         effectiveListUserId ?? undefined,
         { cache: "no-store" },
       );
@@ -119,22 +118,6 @@ export default async function ListadoPage({ searchParams }: ListadoPageProps) {
               ).
             </p>
           )}
-          {unknownSlug && (
-            <p className={styles.subtitle}>
-              No hay una categoría con el identificador{" "}
-              <code className={styles.code}>{slug}</code>.{" "}
-              <Link href="/listado" className={styles.inlineLink}>
-                Ver todos los posts
-              </Link>
-            </p>
-          )}
-          {!unknownSlug ? (
-            <p className={styles.ctaRow}>
-              <ButtonLink href="/listado/nuevo" variant="primary">
-                Nueva publicación (local)
-              </ButtonLink>
-            </p>
-          ) : null}
         </header>
 
         {!unknownSlug && (

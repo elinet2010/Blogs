@@ -9,6 +9,7 @@ import {
 } from "@/data/api-posts";
 import { createLocalPostNumericId } from "@/data/local-post-id";
 import { getUserMessageFromUnknownError } from "@/data/api-http";
+import { computeVisiblePosts } from "@/data/visible-posts";
 
 type EditedMap = Record<number, Partial<Post>>;
 
@@ -52,41 +53,6 @@ function dedupeAppend(existingPosts: Post[], incomingPosts: Post[]): Post[] {
     }
   }
   return mergedPosts;
-}
-
-function buildVisiblePostsFromState(fullPostsState: PostsState): Post[] {
-  const deletedPostIds = new Set(fullPostsState.deletedIds);
-  const postsById = new Map<number, Post>();
-  for (const post of fullPostsState.remotePosts) {
-    postsById.set(post.id, post);
-  }
-  for (const post of fullPostsState.localPosts) {
-    postsById.set(post.id, post);
-  }
-  let visiblePosts = [...postsById.values()].filter(
-    (post) => !deletedPostIds.has(post.id),
-  );
-  if (fullPostsState.listUserId != null) {
-    visiblePosts = visiblePosts.filter(
-      (post) => post.userId === fullPostsState.listUserId,
-    );
-  }
-  return visiblePosts.map((post) => {
-    const editsForPost = fullPostsState.editedById[post.id];
-    return editsForPost ? { ...post, ...editsForPost } : post;
-  });
-}
-
-/** Para UI: derivar en useMemo; no usar como selector de usePostsStore (nuevo array cada vez → bucle con useSyncExternalStore). */
-export type PostsVisibleSlice = Pick<
-  PostsState,
-  "remotePosts" | "localPosts" | "deletedIds" | "editedById" | "listUserId"
->;
-
-export function computeVisiblePosts(
-  postsVisibleSlice: PostsVisibleSlice,
-): Post[] {
-  return buildVisiblePostsFromState(postsVisibleSlice as PostsState);
 }
 
 export const usePostsStore = create<PostsState>()(
@@ -204,7 +170,16 @@ export const usePostsStore = create<PostsState>()(
           localPosts: [...previousState.localPosts, newLocalPost],
         })),
 
-      getVisiblePosts: () => buildVisiblePostsFromState(getState()),
+      getVisiblePosts: () => {
+        const stateSnapshot = getState();
+        return computeVisiblePosts({
+          remotePosts: stateSnapshot.remotePosts,
+          localPosts: stateSnapshot.localPosts,
+          deletedIds: stateSnapshot.deletedIds,
+          editedById: stateSnapshot.editedById,
+          listUserId: stateSnapshot.listUserId,
+        });
+      },
     }),
     {
       name: "posts-app-storage",

@@ -11,14 +11,18 @@ export function PostsFirstPageStatic({ posts }: { posts: Post[] }) {
       <ul className={styles.list}>
         {posts.map((post) => (
           <li key={post.id} className={styles.item}>
-            <article className={styles.card}>
-              <Link href={`/listado/${post.id}`} className={styles.postLink}>
-                <h2 className={styles.postTitle}>{post.title}</h2>
+            <article className={`${styles.card} ${styles.cardInteractive}`}>
+              <Link
+                href={`/listado/${post.id}`}
+                className={styles.cardStaticHit}
+                aria-labelledby={`static-post-title-${post.id}`}
+              >
+                <h2 className={styles.postTitle} id={`static-post-title-${post.id}`}>
+                  {post.title}
+                </h2>
+                <p className={styles.postBody}>{post.body}</p>
+                <span className={styles.cardStaticCta}>Ver publicación</span>
               </Link>
-              <p className={styles.postBody}>{post.body}</p>
-              <p className={styles.staticDetailLink}>
-                <Link href={`/listado/${post.id}`}>Ver publicación</Link>
-              </p>
             </article>
           </li>
         ))}

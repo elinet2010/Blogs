@@ -1,5 +1,5 @@
+export { usePostsStore } from "./usePostsStore";
 export {
-  usePostsStore,
   computeVisiblePosts,
   type PostsVisibleSlice,
-} from "./usePostsStore";
+} from "@/data/visible-posts";

@@ -416,15 +416,26 @@ function PostsListInner({
         <ul className={styles.list}>
           {displayPosts.map((post) => (
             <li key={post.id} className={styles.item}>
-              <article className={styles.card}>
-                <Link href={`/listado/${post.id}`} className={styles.postLink}>
-                  <h2 className={styles.postTitle}>{post.title}</h2>
-                </Link>
-                <p className={styles.postBody}>{post.body}</p>
+              <article className={`${styles.card} ${styles.cardInteractive}`}>
+                <Link
+                  href={`/listado/${post.id}`}
+                  className={styles.cardCover}
+                  aria-labelledby={`post-title-${post.id}`}
+                />
+                <div className={styles.cardText}>
+                  <h2 className={styles.postTitle} id={`post-title-${post.id}`}>
+                    {post.title}
+                  </h2>
+                  <p className={styles.postBody}>{post.body}</p>
+                </div>
                 <div className={styles.actions}>
-                  <Link href={`/listado/${post.id}`} className={styles.editLink}>
+                  <button
+                    type="button"
+                    className={styles.editLink}
+                    onClick={() => router.push(`/listado/${post.id}`)}
+                  >
                     Editar
-                  </Link>
+                  </button>
                   <button
                     type="button"
                     className={styles.ghostBtn}

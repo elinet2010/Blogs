@@ -1,22 +1,6 @@
-.inView {
-  width: 100%;
-  margin: 1.75rem 0 2rem;
-}
-
-.placeholder {
-  width: 100%;
-  border-radius: var(--radius-md, 14px);
-  background: linear-gradient(
-    120deg,
-    color-mix(in srgb, var(--paper-deep) 90%, var(--border)) 0%,
-    var(--paper-elevated) 50%,
-    color-mix(in srgb, var(--paper-deep) 85%, var(--border)) 100%
-  );
-  border: 1px dashed var(--border-strong);
-}
-
 .carousel {
   width: 100%;
+  margin: 1.75rem 0 2rem;
 }
 
 .viewport {

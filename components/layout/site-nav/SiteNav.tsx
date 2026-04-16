@@ -3,9 +3,8 @@ import styles from "./SiteNav.module.css";
 import { ButtonLink } from "@/components/commons/button-link/ButtonLink";
 
 const PRIMARY_NAV_LINKS = [
-  { href: "/", label: "Inicio" },
   { href: "/listado", label: "Publicaciones" },
-  { href: "/listado/nuevo", label: "Nueva" },
+  { href: "/listado/nuevo", label: "Nuevo" },
 ] as const;
 
 export function SiteNav() {
