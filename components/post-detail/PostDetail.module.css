@@ -8,13 +8,13 @@
 .main {
   flex: 1;
   width: 100%;
-  max-width: 640px;
+  max-width: 42rem;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 3rem;
+  padding: 1.5rem 1.25rem 3.5rem;
 }
 
 .nav {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
 
 .back {
@@ -25,48 +25,107 @@
   text-underline-offset: 3px;
 }
 
-.article {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-muted);
-}
-
-.input,
-.textarea {
-  width: 100%;
-  padding: 0.65rem 0.85rem;
-  font-size: 1rem;
-  font-family: inherit;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm, 8px);
-  background: var(--paper-elevated);
-  color: var(--ink);
-}
-
-.textarea {
-  resize: vertical;
-  min-height: 200px;
-  line-height: 1.55;
-}
-
-.input:focus-visible,
-.textarea:focus-visible {
+.back:focus-visible {
   outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-.meta {
-  margin-top: 0.75rem;
+.article {
+  margin: 0;
+}
+
+.header {
+  margin-bottom: 0.25rem;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  flex: 1 1 12rem;
+  font-size: clamp(1.65rem, 4.5vw, 2.15rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.editBtn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 1.15rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: var(--radius-pill, 999px);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--paper-elevated));
+  color: var(--accent);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.editBtn:hover {
+  background: color-mix(in srgb, var(--accent-soft) 85%, var(--paper-elevated));
+  border-color: var(--accent);
+}
+
+.editBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.byline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
   font-size: 0.875rem;
   color: var(--ink-muted);
+}
+
+.metaLabel {
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.metaValue {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--ink) 88%, var(--accent));
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  margin: 0 0.15rem;
+}
+
+.body {
+  margin-top: 0.5rem;
+}
+
+.paragraph {
+  font-size: 1.0625rem;
+  line-height: 1.78;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
 }
 
 .hiddenMsg {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { HomeCoverHero } from "@/components/home-cover-hero/HomeCoverHero";
-import { HomeCategoriesGrid } from "@/components/home-categories-grid/HomeCategoriesGrid";
-import { VerMasButton } from "@/components/ver-mas-button/VerMasButton";
+import { HomeCoverHero } from "@/components/home/home-cover-hero/HomeCoverHero";
+import { HomeCategoriesGrid } from "@/components/home/home-categories-grid/HomeCategoriesGrid";
+import { VerMasButton } from "@/components/home/ver-mas-button/VerMasButton";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function Home() {
         </div>
         <div className={styles.lower}>
           <HomeCategoriesGrid surface="cover" />
-          <VerMasButton variant="cover" />
+          <VerMasButton />
         </div>
       </main>
     </div>

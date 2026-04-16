@@ -1,9 +1,11 @@
 import Link from "next/link";
 import styles from "./SiteNav.module.css";
+import { ButtonLink } from "@/components/commons/button-link/ButtonLink";
 
-const links = [
+const PRIMARY_NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/listado", label: "Publicaciones" },
+  { href: "/listado/nuevo", label: "Nueva" },
 ] as const;
 
 export function SiteNav() {
@@ -16,11 +18,11 @@ export function SiteNav() {
         </Link>
         <nav className={styles.nav} aria-label="Principal">
           <ul className={styles.list}>
-            {links.map(({ href, label }) => (
+            {PRIMARY_NAV_LINKS.map(({ href, label }) => (
               <li key={href}>
-                <Link href={href} className={styles.link}>
+                <ButtonLink href={href} variant="secondary" size="small">
                   {label}
-                </Link>
+                </ButtonLink>
               </li>
             ))}
           </ul>

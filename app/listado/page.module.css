@@ -73,6 +73,17 @@
   color: var(--accent-hover);
 }
 
+.noJsNote {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  border-radius: var(--radius-md, 14px);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--paper-deep) 55%, var(--paper-elevated));
+}
+
 .placeholder {
   padding: 2rem 1.25rem;
   border-radius: var(--radius-md, 14px);
@@ -84,4 +95,8 @@
 .placeholderText {
   font-size: 0.9375rem;
   color: var(--ink-muted);
+}
+
+.ctaRow {
+  margin: 0 0 0.25rem;
 }

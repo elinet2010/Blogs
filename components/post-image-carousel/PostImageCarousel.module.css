@@ -1,0 +1,117 @@
+.inView {
+  width: 100%;
+  margin: 1.75rem 0 2rem;
+}
+
+.placeholder {
+  width: 100%;
+  border-radius: var(--radius-md, 14px);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--paper-deep) 90%, var(--border)) 0%,
+    var(--paper-elevated) 50%,
+    color-mix(in srgb, var(--paper-deep) 85%, var(--border)) 100%
+  );
+  border: 1px dashed var(--border-strong);
+}
+
+.carousel {
+  width: 100%;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-md, 14px);
+  overflow: hidden;
+  background: var(--paper-deep);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.caption {
+  margin-top: 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.85rem;
+}
+
+.navBtn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  line-height: 1;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--paper-elevated);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.navBtn:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+  color: var(--accent);
+}
+
+.navBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.dots {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.dot,
+.dotActive {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.dot {
+  background: color-mix(in srgb, var(--ink-muted) 45%, transparent);
+}
+
+.dot:hover {
+  background: color-mix(in srgb, var(--accent) 50%, var(--ink-muted));
+}
+
+.dotActive {
+  background: var(--accent);
+  transform: scale(1.15);
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

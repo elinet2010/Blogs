@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SiteNav } from "@/components/site-nav/SiteNav";
+import Script from "next/script";
+import { SiteNav } from "@/components/layout/site-nav/SiteNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,6 +30,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
+        <Script id="scripting-available-flag" strategy="beforeInteractive">
+          {`document.documentElement.classList.add("scripting-available")`}
+        </Script>
         <SiteNav />
         <div className="site-shell">{children}</div>
       </body>

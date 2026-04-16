@@ -1,23 +1,41 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCategoryBySlug } from "@/lib/categories";
+import { unstable_noStore as noStore } from "next/cache";
+import { ButtonLink } from "@/components/commons/button-link/ButtonLink";
+import { fetchPostsPage } from "@/data/api-posts";
+import { getCategoryBySlug } from "@/data/categories";
+import { POSTS_LIST_PAGE_SIZE } from "@/data/list-pagination";
+import { parseAuthorParam } from "@/data/post-filters";
+import type { Post } from "@/data/types";
+import { PostsFirstPageStatic } from "@/components/posts-list/PostsFirstPageStatic";
 import { PostsList } from "@/components/posts-list/PostsList";
 import styles from "./page.module.css";
 
-type ListadoPageProps = {
-  searchParams: Promise<{ categoria?: string | string[] }>;
+type ListadoSearchParams = {
+  categoria?: string | string[];
+  autor?: string | string[];
 };
 
-function firstParam(value: string | string[] | undefined): string | undefined {
+type ListadoPageProps = {
+  searchParams: Promise<ListadoSearchParams>;
+};
+
+/** Primera carga del listado con datos frescos desde el origen. */
+export const dynamic = "force-dynamic";
+
+function getFirstSearchParamValue(
+  value: string | string[] | undefined,
+): string | undefined {
   if (value === undefined) return undefined;
   return Array.isArray(value) ? value[0] : value;
 }
 
+// Funcion para generar los metadatos de la pagina
 export async function generateMetadata({
   searchParams,
 }: ListadoPageProps): Promise<Metadata> {
   const params = await searchParams;
-  const slug = firstParam(params.categoria);
+  const slug = getFirstSearchParamValue(params.categoria);
   const category = getCategoryBySlug(slug);
 
   if (category) {
@@ -41,10 +59,32 @@ export async function generateMetadata({
 }
 
 export default async function ListadoPage({ searchParams }: ListadoPageProps) {
+  noStore();
+
   const params = await searchParams;
-  const slug = firstParam(params.categoria);
+  const slug = getFirstSearchParamValue(params.categoria);
   const category = getCategoryBySlug(slug);
   const unknownSlug = slug && !category;
+
+  const authorFromUrl = parseAuthorParam(
+    getFirstSearchParamValue(params.autor) ?? null,
+  );
+  const effectiveListUserId =
+    category != null ? category.userId : authorFromUrl;
+
+  let initialRemotePosts: Post[] | undefined;
+  if (!unknownSlug) {
+    try {
+      initialRemotePosts = await fetchPostsPage(
+        0,
+        POSTS_LIST_PAGE_SIZE,
+        effectiveListUserId ?? undefined,
+        { cache: "no-store" },
+      );
+    } catch {
+      initialRemotePosts = undefined;
+    }
+  }
 
   const title = unknownSlug
     ? "Categoría no encontrada"
@@ -65,14 +105,18 @@ export default async function ListadoPage({ searchParams }: ListadoPageProps) {
           <h1 className={styles.title}>{title}</h1>
           {category && (
             <p className={styles.subtitle}>
-              Filtro activo: publicaciones del autor (userId){" "}
-              <code className={styles.code}>{category.userId}</code>. Aquí irá el listado
-              con scroll infinito.
+              Autor fijado por la categoría ({" "}
+              <code className={styles.code}>userId {category.userId}</code>). Podés seguir
+              filtrando por texto y ordenar el listado; el detalle y la edición están en cada
+              post.
             </p>
           )}
           {!slug && (
             <p className={styles.subtitle}>
-              Sin filtro de categoría. Aquí irá el listado completo con scroll infinito.
+              Filtros por texto, autor (usuario 1–10) y orden; scroll infinito; enlaces al
+              detalle. Los parámetros se reflejan en la URL (<code className={styles.code}>q</code>,{" "}
+              <code className={styles.code}>autor</code>, <code className={styles.code}>orden</code>
+              ).
             </p>
           )}
           {unknownSlug && (
@@ -84,7 +128,23 @@ export default async function ListadoPage({ searchParams }: ListadoPageProps) {
               </Link>
             </p>
           )}
+          {!unknownSlug ? (
+            <p className={styles.ctaRow}>
+              <ButtonLink href="/listado/nuevo" variant="primary">
+                Nueva publicación (local)
+              </ButtonLink>
+            </p>
+          ) : null}
         </header>
+
+        {!unknownSlug && (
+          <noscript>
+            <p className={styles.noJsNote}>
+              Mostramos hasta 25 publicaciones de esta vista. Activá JavaScript para filtros,
+              orden y más páginas.
+            </p>
+          </noscript>
+        )}
 
         {unknownSlug ? (
           <section className={styles.placeholder} aria-label="Sin categoría">
@@ -93,7 +153,30 @@ export default async function ListadoPage({ searchParams }: ListadoPageProps) {
             </p>
           </section>
         ) : (
-          <PostsList filterUserId={category ? category.userId : null} />
+          <>
+            {initialRemotePosts && initialRemotePosts.length > 0 ? (
+              <div className="listado-static-posts">
+                <PostsFirstPageStatic posts={initialRemotePosts} />
+              </div>
+            ) : null} 
+            <div
+              className={
+                initialRemotePosts?.length
+                  ? "listado-client-posts"
+                  : undefined
+              }
+            >
+              <PostsList
+                filterUserId={category ? category.userId : null}
+                initialRemotePosts={initialRemotePosts}
+                initialRemoteListUserId={
+                  initialRemotePosts !== undefined
+                    ? effectiveListUserId
+                    : undefined
+                }
+              />
+            </div>
+          </>
         )}
       </main>
     </div>

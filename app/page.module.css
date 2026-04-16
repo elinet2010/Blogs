@@ -45,6 +45,7 @@
   margin: 0 auto;
   padding-left: 1.25rem;
   padding-right: 1.25rem;
+  padding-top: var(--nav-h);
 }
 
 .heroBlock {
@@ -52,13 +53,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: clamp(1.25rem, 4vh, 2.5rem);
-  padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
-  min-height: min(52dvh, 420px);
+  min-height: 30dvh;
 }
 
 .lower {
   margin-top: auto;
+  min-height: 50dvh;
   padding-top: 0.5rem;
 }
 
@@ -69,6 +69,6 @@
   }
 
   .heroBlock {
-    min-height: min(46dvh, 380px);
+    min-height: 30dvh;
   }
 }

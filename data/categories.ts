@@ -8,8 +8,12 @@ export type Category = {
   coverImageUrl: string;
 };
 
-function picsumCover(slug: string, width = 720, height = 420): string {
-  return `https://picsum.photos/seed/blog-cat-${slug}/${width}/${height}`;
+function buildCategoryCoverImageUrl(
+  categorySlug: string,
+  width = 720,
+  height = 420,
+): string {
+  return `https://picsum.photos/seed/blog-cat-${categorySlug}/${width}/${height}`;
 }
 
 export const CATEGORIES: readonly Category[] = [
@@ -18,27 +22,27 @@ export const CATEGORIES: readonly Category[] = [
     title: "Vida digital",
     description: "Ideas y reflexiones sobre tecnología en el día a día.",
     userId: 1,
-    coverImageUrl: picsumCover("vida-digital"),
+    coverImageUrl: buildCategoryCoverImageUrl("vida-digital"),
   },
   {
     slug: "creatividad",
     title: "Creatividad",
     description: "Proyectos, inspiración y formas de contar historias.",
     userId: 2,
-    coverImageUrl: picsumCover("creatividad"),
+    coverImageUrl: buildCategoryCoverImageUrl("creatividad"),
   },
   {
     slug: "aprendizaje",
     title: "Aprendizaje",
     description: "Notas, recursos y caminos para seguir aprendiendo.",
     userId: 3,
-    coverImageUrl: picsumCover("aprendizaje"),
+    coverImageUrl: buildCategoryCoverImageUrl("aprendizaje"),
   },
 ] as const;
 
 export function getCategoryBySlug(slug: string | undefined): Category | undefined {
   if (!slug) return undefined;
-  return CATEGORIES.find((c) => c.slug === slug);
+  return CATEGORIES.find((category) => category.slug === slug);
 }
 
 export function listadoHrefForCategory(slug: string): string {

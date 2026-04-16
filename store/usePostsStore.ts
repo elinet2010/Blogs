@@ -1,80 +1,79 @@
-/**
- * Store de posts — Zustand (pasos 1–9 del plan técnico)
- * 1. zustand instalado
- * 2. tipo Post en lib/types.ts
- * 3–4. estado remoto + appendPosts, setLoading, setError, fetchPage
- * 5–6. deletedIds, editedById, localPosts + acciones
- * 7. getVisiblePosts (merge remoto + local − borrados + ediciones)
- * 8. persist en localStorage (solo borrados, ediciones, locales)
- * 9. UI: components/posts-list/PostsList.tsx
- */
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { Post } from "@/lib/types";
-import { fetchPostsPage } from "@/lib/api-posts";
+import type { Post } from "@/data/types";
+import { POSTS_LIST_PAGE_SIZE } from "@/data/list-pagination";
+import {
+  createPostViaApi,
+  fetchPostsPage,
+  type CreatePostPayload,
+} from "@/data/api-posts";
+import { createLocalPostNumericId } from "@/data/local-post-id";
+import { getUserMessageFromUnknownError } from "@/data/api-http";
 
 type EditedMap = Record<number, Partial<Post>>;
 
 type PostsState = {
-  /* Paso 3 — estado remoto mínimo */
   remotePosts: Post[];
   isLoading: boolean;
   error: string | null;
-  /** Paginación del listado activo */
   nextStart: number;
   hasMore: boolean;
   /** null = todos los autores; número = filtro JSONPlaceholder */
   listUserId: number | null;
-
-  /* Paso 5 — estado local / ediciones */
   deletedIds: number[];
   editedById: EditedMap;
   localPosts: Post[];
-
-  /* Paso 4 */
-  setLoading: (value: boolean) => void;
-  setError: (message: string | null) => void;
-  appendPosts: (posts: Post[]) => void;
-  resetRemoteForList: (userId: number | null) => void;
-  fetchPage: (limit?: number) => Promise<void>;
-
-  /* Paso 6 */
-  deletePost: (id: number) => void;
-  upsertEdit: (id: number, partial: Partial<Post>) => void;
-  addLocalPost: (post: Post) => void;
-
-  /* Paso 7 */
+  setLoading: (nextIsLoading: boolean) => void;
+  setError: (errorMessage: string | null) => void;
+  appendPosts: (postsToAppend: Post[]) => void;
+  resetRemoteForList: (filterByAuthorUserId: number | null) => void;
+  /** Primera página ya traída en el servidor — evita duplicar la petición inicial en el cliente. */
+  seedFirstPageFromServer: (
+    filterByAuthorUserId: number | null,
+    firstPagePosts: Post[],
+    pageSize: number,
+  ) => void;
+  fetchPage: (pageSize?: number) => Promise<void>;
+  /** POST a la API y persistencia local; devuelve el id local del post. */
+  createPostWithApi: (payload: CreatePostPayload) => Promise<number>;
+  deletePost: (postId: number) => void;
+  upsertEdit: (postId: number, partialPostFields: Partial<Post>) => void;
+  addLocalPost: (newLocalPost: Post) => void;
   getVisiblePosts: () => Post[];
 };
 
-function dedupeAppend(existing: Post[], incoming: Post[]): Post[] {
-  const seen = new Set(existing.map((p) => p.id));
-  const out = [...existing];
-  for (const p of incoming) {
-    if (!seen.has(p.id)) {
-      seen.add(p.id);
-      out.push(p);
+function dedupeAppend(existingPosts: Post[], incomingPosts: Post[]): Post[] {
+  const postIdsAlreadyMerged = new Set(existingPosts.map((post) => post.id));
+  const mergedPosts = [...existingPosts];
+  for (const post of incomingPosts) {
+    if (!postIdsAlreadyMerged.has(post.id)) {
+      postIdsAlreadyMerged.add(post.id);
+      mergedPosts.push(post);
     }
   }
-  return out;
+  return mergedPosts;
 }
 
-function mergeVisible(state: PostsState): Post[] {
-  const deleted = new Set(state.deletedIds);
-  const byId = new Map<number, Post>();
-  for (const p of state.remotePosts) {
-    byId.set(p.id, p);
+function buildVisiblePostsFromState(fullPostsState: PostsState): Post[] {
+  const deletedPostIds = new Set(fullPostsState.deletedIds);
+  const postsById = new Map<number, Post>();
+  for (const post of fullPostsState.remotePosts) {
+    postsById.set(post.id, post);
   }
-  for (const p of state.localPosts) {
-    byId.set(p.id, p);
+  for (const post of fullPostsState.localPosts) {
+    postsById.set(post.id, post);
   }
-  let list = [...byId.values()].filter((p) => !deleted.has(p.id));
-  if (state.listUserId != null) {
-    list = list.filter((p) => p.userId === state.listUserId);
+  let visiblePosts = [...postsById.values()].filter(
+    (post) => !deletedPostIds.has(post.id),
+  );
+  if (fullPostsState.listUserId != null) {
+    visiblePosts = visiblePosts.filter(
+      (post) => post.userId === fullPostsState.listUserId,
+    );
   }
-  return list.map((p) => {
-    const edit = state.editedById[p.id];
-    return edit ? { ...p, ...edit } : p;
+  return visiblePosts.map((post) => {
+    const editsForPost = fullPostsState.editedById[post.id];
+    return editsForPost ? { ...post, ...editsForPost } : post;
   });
 }
 
@@ -84,13 +83,15 @@ export type PostsVisibleSlice = Pick<
   "remotePosts" | "localPosts" | "deletedIds" | "editedById" | "listUserId"
 >;
 
-export function computeVisiblePosts(state: PostsVisibleSlice): Post[] {
-  return mergeVisible(state as PostsState);
+export function computeVisiblePosts(
+  postsVisibleSlice: PostsVisibleSlice,
+): Post[] {
+  return buildVisiblePostsFromState(postsVisibleSlice as PostsState);
 }
 
 export const usePostsStore = create<PostsState>()(
   persist(
-    (set, get) => ({
+    (setState, getState) => ({
       remotePosts: [],
       isLoading: false,
       error: null,
@@ -102,71 +103,116 @@ export const usePostsStore = create<PostsState>()(
       editedById: {},
       localPosts: [],
 
-      setLoading: (isLoading) => set({ isLoading }),
-      setError: (error) => set({ error }),
+      setLoading: (nextIsLoading) =>
+        setState({ isLoading: nextIsLoading }),
+      setError: (errorMessage) => setState({ error: errorMessage }),
 
-      appendPosts: (posts) =>
-        set((s) => ({
-          remotePosts: dedupeAppend(s.remotePosts, posts),
+      appendPosts: (postsToAppend) =>
+        setState((previousState) => ({
+          remotePosts: dedupeAppend(previousState.remotePosts, postsToAppend),
         })),
 
-      resetRemoteForList: (userId) =>
-        set({
+      resetRemoteForList: (filterByAuthorUserId) =>
+        setState({
           remotePosts: [],
           nextStart: 0,
           hasMore: true,
-          listUserId: userId,
+          listUserId: filterByAuthorUserId,
           error: null,
           isLoading: false,
         }),
 
-      fetchPage: async (limit = 10) => {
-        const { isLoading, hasMore, nextStart, listUserId, appendPosts } = get();
+      seedFirstPageFromServer: (filterByAuthorUserId, firstPagePosts, pageSize) =>
+        setState({
+          remotePosts: firstPagePosts,
+          nextStart: firstPagePosts.length,
+          hasMore: firstPagePosts.length === pageSize,
+          listUserId: filterByAuthorUserId,
+          error: null,
+          isLoading: false,
+        }),
+
+      fetchPage: async (pageSize = POSTS_LIST_PAGE_SIZE) => {
+        const {
+          isLoading,
+          hasMore,
+          nextStart,
+          listUserId,
+          appendPosts: appendRemotePostsBatch,
+        } = getState();
         if (isLoading || !hasMore) return;
 
-        set({ isLoading: true, error: null });
+        setState({ isLoading: true, error: null });
         try {
-          const userId = listUserId ?? undefined;
-          const posts = await fetchPostsPage(nextStart, limit, userId);
-          appendPosts(posts);
-          set((s) => ({
-            nextStart: s.nextStart + posts.length,
-            hasMore: posts.length === limit,
+          const apiUserIdFilter = listUserId ?? undefined;
+          const fetchedPosts = await fetchPostsPage(
+            nextStart,
+            pageSize,
+            apiUserIdFilter,
+          );
+          appendRemotePostsBatch(fetchedPosts);
+          setState((previousState) => ({
+            nextStart: previousState.nextStart + fetchedPosts.length,
+            hasMore: fetchedPosts.length === pageSize,
             isLoading: false,
           }));
-        } catch (e) {
-          set({
-            error: e instanceof Error ? e.message : "Error desconocido",
+        } catch (caughtError: unknown) {
+          setState({
+            error: getUserMessageFromUnknownError(caughtError),
             isLoading: false,
           });
         }
       },
 
-      deletePost: (id) =>
-        set((s) => ({
-          deletedIds: s.deletedIds.includes(id) ? s.deletedIds : [...s.deletedIds, id],
+      createPostWithApi: async (payload) => {
+        const apiPost = await createPostViaApi(payload);
+        const localId = createLocalPostNumericId();
+        setState((previousState) => ({
+          localPosts: [
+            ...previousState.localPosts,
+            {
+              id: localId,
+              userId: apiPost.userId,
+              title: apiPost.title,
+              body: apiPost.body,
+            },
+          ],
+        }));
+        return localId;
+      },
+
+      deletePost: (postId) =>
+        setState((previousState) => ({
+          deletedIds: previousState.deletedIds.includes(postId)
+            ? previousState.deletedIds
+            : [...previousState.deletedIds, postId],
         })),
 
-      upsertEdit: (id, partial) =>
-        set((s) => ({
-          editedById: { ...s.editedById, [id]: { ...s.editedById[id], ...partial } },
+      upsertEdit: (postId, partialPostFields) =>
+        setState((previousState) => ({
+          editedById: {
+            ...previousState.editedById,
+            [postId]: {
+              ...previousState.editedById[postId],
+              ...partialPostFields,
+            },
+          },
         })),
 
-      addLocalPost: (post) =>
-        set((s) => ({
-          localPosts: [...s.localPosts, post],
+      addLocalPost: (newLocalPost) =>
+        setState((previousState) => ({
+          localPosts: [...previousState.localPosts, newLocalPost],
         })),
 
-      getVisiblePosts: () => mergeVisible(get()),
+      getVisiblePosts: () => buildVisiblePostsFromState(getState()),
     }),
     {
       name: "posts-app-storage",
       storage: createJSONStorage(() => localStorage),
-      /* Paso 8 — no persistir los 100 posts remotos */
-      partialize: (s) => ({
-        deletedIds: s.deletedIds,
-        editedById: s.editedById,
-        localPosts: s.localPosts,
+      partialize: (stateToPersist) => ({
+        deletedIds: stateToPersist.deletedIds,
+        editedById: stateToPersist.editedById,
+        localPosts: stateToPersist.localPosts,
       }),
     },
   ),
