@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Proyecto blogs
 
-## Getting Started
+Aplicación web de listado y detalle de publicaciones construida con **Next.js** y **TypeScript**. Los datos remotos provienen de la API pública [JSONPlaceholder](https://jsonplaceholder.typicode.com); las ediciones, publicaciones nuevas y elementos ocultos se persisten **solo en el navegador** (Zustand + `localStorage`).
 
-First, run the development server:
+## Requisitos
+
+- **Node.js** 20 o superior recomendado
+- **npm** (o `pnpm` / `yarn` si adaptás los comandos)
+
+## Instalación
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No hace falta archivo `.env` para desarrollo: la API es pública por HTTPS.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comando | Descripción |
+|--------|-------------|
+| `npm run dev` | Servidor de desarrollo en [http://localhost:3000](http://localhost:3000) |
+| `npm run build` | Compilación de producción |
+| `npm run start` | Sirve la build (ejecutar después de `build`) |
+| `npm run lint` | ESLint con la configuración de Next.js |
+| `npm run test` | Pruebas unitarias (Vitest, una ejecución) |
+| `npm run test:watch` | Vitest en modo observación |
+| `npm run test:coverage` | Tests con informe de cobertura (`coverage/`) |
 
-## Learn More
+## Cómo usar la aplicación
 
-To learn more about Next.js, take a look at the following resources:
+### Rutas principales
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **`/`** — Inicio con acceso al listado.
+- **`/listado`** — Listado de posts con filtros por texto, autor (usuario 1–10) y orden; parámetros en la URL (`q`, `autor`, `orden`). Scroll infinito para cargar más páginas desde la API.
+- **`/listado/nuevo`** — Formulario para crear una publicación: primero se envía un **POST** a JSONPlaceholder y, si la respuesta es correcta, se guarda una copia local con id negativo (la API de demo no persiste en servidor).
+- **`/listado/[id]`** — Detalle de un post; si la API no tiene ese id (por ejemplo posts solo locales), se resuelve desde el almacenamiento local.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Categorías en inicio enlazan a `/listado?categoria=...` y fijan un autor según la categoría.
 
-## Deploy on Vercel
+### Datos locales
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Clave de persistencia en `localStorage`: **`posts-app-storage`**.
+- Incluye posts locales, ids ocultados y ediciones aplicadas al título/cuerpo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### API
+
+- Lectura y paginación: `GET https://jsonplaceholder.typicode.com/posts` (con `_start`, `_limit`, opcionalmente `userId`).
+- Alta desde “Nueva publicación”: `POST` al mismo recurso `/posts`. La respuesta es real por red pero **no deja datos guardados** en el servidor de JSONPlaceholder; la app confía en la copia local para listado y detalle.
+
+## Stack técnico
+
+- **Next.js** (App Router), **React**, **TypeScript**
+- Estado y persistencia: **Zustand** (`persist` → `localStorage`)
+- Estilos: **CSS Modules** (sin Tailwind en esta versión)
+- Imágenes de ejemplo: **Picsum** (dominio permitido en `next.config.ts`)
+- Tests: **Vitest**, **Testing Library**, cobertura v8
+
+## Despliegue
+
+1. Generá la build: `npm run build`.
+2. Arrancá en producción: `npm run start` (puerto por defecto 3000).
+
+En plataformas como [Vercel](https://vercel.com) o [Netlify](https://www.netlify.com), conectá el repositorio y usá el comando de build `npm run build` y el directorio de salida estándar de Next.js (Vercel lo detecta automáticamente).
+
+## Estructura relevante
+
+- `app/` — Rutas y layouts (`page.tsx`, `layout.tsx`).
+- `components/` — UI por dominio (listado, detalle, navegación, formularios).
+- `data/` — Cliente HTTP, filtros, categorías, utilidades de posts visibles.
+- `store/` — Store de Zustand del listado y acciones async (p. ej. más páginas, crear post vía API + local).
+
+## Licencia
+
+Privado / según definas para el repositorio.

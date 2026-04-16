@@ -1,0 +1,450 @@
+.root {
+  width: 100%;
+}
+
+.staticBlock {
+  width: 100%;
+}
+
+/* Listado estático (sin JS): un solo enlace envuelve título, cuerpo y CTA */
+.cardStaticHit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 100%;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  border-radius: calc(var(--radius-md, 14px) - 2px);
+}
+
+.cardStaticHit:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.cardStaticCta {
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.cardInteractive:hover .cardStaticCta {
+  color: var(--accent-hover);
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardInteractive:hover .cardStaticCta {
+    transform: none;
+  }
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.item {
+  min-width: 0;
+}
+
+.card {
+  position: relative;
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius-md, 14px);
+  border: 1px solid var(--border);
+  background: var(--paper-elevated);
+}
+
+/* Tarjeta interactiva: hover/focus refinados (capa editorial) */
+.cardInteractive {
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.22s cubic-bezier(0.33, 1, 0.68, 1),
+    background 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.28s ease;
+}
+
+.cardInteractive::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-soft) 55%, transparent) 0%,
+    transparent 52%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 100%
+  );
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cardInteractive:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 18%, var(--paper-elevated));
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.07),
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.cardInteractive:hover::before {
+  opacity: 1;
+}
+
+.cardInteractive:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardInteractive {
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cardInteractive:hover {
+    transform: none;
+  }
+
+  .cardInteractive::before {
+    transition: none;
+  }
+}
+
+/* Enlace invisible que cubre toda la tarjeta; título enlazado por aria-labelledby */
+.cardCover {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.cardText {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.postTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.postBody {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.actions {
+  position: relative;
+  z-index: 3;
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.editLink {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 45%, var(--paper-elevated));
+  color: var(--accent);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.editLink:hover {
+  background: color-mix(in srgb, var(--accent-soft) 80%, var(--paper-elevated));
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.editLink:active {
+  transform: scale(0.98);
+}
+
+.editLink:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.noHits {
+  padding: 1.25rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  text-align: center;
+  border-radius: var(--radius-md, 14px);
+  border: 1px dashed var(--border-strong);
+  background: color-mix(in srgb, var(--paper-deep) 40%, var(--paper-elevated));
+}
+
+.suspenseBar {
+  height: 46px;
+  margin-bottom: 1.35rem;
+  border-radius: var(--radius-md, 14px);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 5%, transparent),
+    color-mix(in srgb, var(--ink) 10%, transparent),
+    color-mix(in srgb, var(--ink) 5%, transparent)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.ghostBtn {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.ghostBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sentinel {
+  height: 1px;
+  margin-top: 1rem;
+}
+
+/* Carga inicial — bloques con brillo suave (no spinner agresivo) */
+.skeletonCard {
+  pointer-events: none;
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--paper-deep) 65%, var(--paper-elevated)) 0%,
+    var(--paper-elevated) 50%,
+    color-mix(in srgb, var(--paper-deep) 55%, var(--paper-elevated)) 100%
+  );
+  background-size: 200% 200%;
+  animation: skeletonShift 2.4s ease-in-out infinite;
+}
+
+@keyframes skeletonShift {
+  0%,
+  100% {
+    background-position: 0% 40%;
+  }
+  50% {
+    background-position: 100% 60%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonCard {
+    animation: none;
+  }
+
+  .skeletonTitle,
+  .skeletonLine {
+    animation: none;
+    opacity: 0.65;
+  }
+
+  .pulseDot {
+    animation: none;
+    opacity: 0.55;
+  }
+}
+
+.skeletonTitle {
+  height: 1.1rem;
+  width: 72%;
+  border-radius: var(--radius-sm, 8px);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 6%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 11%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  margin-bottom: 0.85rem;
+}
+
+.skeletonLine {
+  height: 0.65rem;
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 4%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 9%, transparent) 45%,
+    color-mix(in srgb, var(--ink) 4%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  animation-delay: 0.12s;
+}
+
+.skeletonLineShort {
+  width: 58%;
+  animation-delay: 0.2s;
+}
+
+.skeletonLineMuted {
+  width: 42%;
+  opacity: 0.75;
+  animation-delay: 0.28s;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Scroll infinito — pie con puntos y acento editorial */
+.loadMoreFoot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1.35rem 0 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.pulseTrack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.pulseDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 55%, var(--ink-muted));
+  opacity: 0.35;
+  animation: dotPulse 1.05s ease-in-out infinite;
+}
+
+.pulseDot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.pulseDot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+}
+
+.loadMoreLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink-muted) 92%, var(--accent));
+}
+
+.end {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  margin-top: 1rem;
+}
+
+.moreBtn {
+  display: block;
+  margin: 1.25rem auto 0;
+  min-height: 44px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-pill, 999px);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.moreBtn:hover {
+  background: var(--accent-hover);
+}
+
+.moreBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.error {
+  padding: 1.25rem;
+  border-radius: var(--radius-md, 14px);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.retry {
+  margin-top: 0.75rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-strong);
+  background: var(--paper-elevated);
+  cursor: pointer;
+}
+
+.empty {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}

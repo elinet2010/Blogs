@@ -1,0 +1,56 @@
+.root {
+  max-width: 40rem;
+}
+
+.kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cover-accent-line);
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: clamp(2.15rem, 6.5vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--cover-text);
+  margin-bottom: 1.1rem;
+}
+
+.titleAccent {
+  color: transparent;
+  background: linear-gradient(
+    120deg,
+    #fed7aa 0%,
+    #fb923c 45%,
+    #fdba74 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.lead {
+  font-size: clamp(1rem, 2.4vw, 1.125rem);
+  line-height: 1.65;
+  color: var(--cover-text-muted);
+  max-width: 36rem;
+}
+
+.rule {
+  margin-top: 1.75rem;
+  width: 3.5rem;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--cover-accent-line), transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  .titleAccent {
+    background: linear-gradient(120deg, #fdba74 0%, #fb923c 50%, #fed7aa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}

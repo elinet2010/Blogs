@@ -1,0 +1,86 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: var(--radius-pill, 999px);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.sizeMedium {
+  min-height: 44px;
+  padding: 0.65rem 1.75rem;
+  font-size: 1rem;
+}
+
+.sizeSmall {
+  min-height: 40px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 480px) {
+  .sizeSmall {
+    padding: 0.5rem 1rem;
+    font-size: 0.9375rem;
+  }
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.sizeSmall:focus-visible {
+  outline-offset: 2px;
+}
+
+.root:active {
+  transform: scale(0.98);
+}
+
+/*
+ * Primary: CTA translúcido sobre fondos oscuros (usa tokens del hero).
+ */
+.primary {
+  border: 2px solid color-mix(in srgb, var(--cover-text) 55%, transparent);
+  color: var(--cover-text);
+  background: color-mix(in srgb, var(--cover-text) 12%, transparent);
+}
+
+.primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Secondary en superficie clara: mismos colores que los enlaces del SiteNav */
+.secondary {
+  border: 2px solid transparent;
+  background: transparent;
+  color: var(--ink-muted);
+}
+
+.secondary:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--paper-deep) 90%, transparent);
+}
+
+/* Secondary sobre fondo oscuro / inverso */
+.secondaryInverse {
+  border: 2px solid color-mix(in srgb, var(--cover-text) 70%, transparent);
+  background: transparent;
+  color: var(--cover-text);
+}
+
+.secondaryInverse:hover {
+  background: color-mix(in srgb, var(--cover-text) 14%, transparent);
+  border-color: var(--cover-text);
+  color: var(--cover-text);
+}
